@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Преподаватель</title>
+
+    <link href="styles/index.css" rel="stylesheet">
+
+    <script>
+        const Teacher = {
+            surname: "Михеева",
+            name: "Татьяна",
+            patronymic: "Александровна",
+            ocupation: "Преподаватель специальных дисциплин",
+            degree: "Высшее",
+            education: "Московский государственный институт электронной техники (технический университет)",
+            qualification: "Инженер-программист инфокоммуникационных систем",
+            specialty: "Программное обеспечение радиоэлектронных систем",
+            discipline: ["Основы алгоритмизации и программирование","Компьютерная графика"],
+            extra: {}
+        };
+        Teacher.extra.category = Teacher.extra.experience = Teacher.extra.email = Teacher.extra.site = "Неизвестный";   
+    </script>
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="navigation">
+            <a href="#">О проекте</a>
+            <a href="#">Курсы</a>
+            <a href="#">Преподаватели</a>
+            <a href="#">Контакты</a>
+        </div>
+
+    </header>
+
+    <section class="info">
+
+        <img src="images/no-image.jpg" alt="Teacher Image" class="img-teacher">
+        <div class="right">
+        </div>
+    </section>
+
+    <script>
+
+
+        const right = document.querySelector(".right");
+
+        if (!right) throw new Error("Элемент не найден");
+
+        Teacher.extra["category"] = prompt("Укажите категорию:","Первая");
+        Teacher.extra["experience"] = prompt("Укажите стаж работы:","13");
+        Teacher.extra["email"] = prompt("Укажите email:","program@mail.ru");
+        Teacher.extra["site"] = prompt("Укажите персональный сайт:","program.site/?ref=MpK");
+
+        console.log(right.childNodes);
+
+        let code = ``;
+        code += returnH(1, `${Teacher.surname} ${Teacher.name} ${Teacher.patronymic}`);
+        code += returnH(2, Teacher.ocupation)
+
+        code += returnP(`Основная информация:`);
+
+        code += `<ul type="square">`;
+            code += returnLi(`Уровень образования`, Teacher.degree);
+            code += returnLi(`Образование`, Teacher.education);
+            code += returnLi(`Квалификация`, Teacher.qualification);
+            code += returnLi(`Специализация`, Teacher.specialty);
+            code += returnLi(`Преподаваемые дисциплины`, "");
+                code += `<ul>`;
+
+                    if(Teacher.discipline.length < 1) {
+                        code += returnLi2(`Нет таковых`);
+                    } else {
+                        console.log(Teacher.discipline)
+                        Teacher.discipline.forEach((discipline) => {
+                            console.log(discipline)
+                            code += returnLi2(discipline);
+                        })
+                    }
+                code += `</ul>`;
+        code += `</ul>`;
+
+        code += returnP(`Дополнительная информация:`);
+
+        code += `<ul type="square">`;
+            code += returnLi(`Категория`, Teacher.extra["category"]);
+            code += returnLi(`Стаж`, Teacher.extra["experience"]);
+            code += returnLi(`E-mail`, Teacher.extra["email"]);
+            code += returnLi(`Персональный сайт`, `<a href="${Teacher.extra["site"]}">${Teacher.extra["site"]}</a>`);
+        code += `</ul>`;
+        
+        right.innerHTML += code;    
+
+        function returnH(num, value) {
+            return `<h${num}>${value}</h${num}>`;
+        }
+
+        function returnP(name) {
+            return `<p>${name}</p>`;
+        }
+
+        function returnLi(name, value) {
+            return `<li>${name}: ${value}</li>`;
+        } 
+        function returnLi2(value) {
+            return `<li name="second">${value}</li>`;
+        }
+    </script>
+
+</body>
+
+</html>
