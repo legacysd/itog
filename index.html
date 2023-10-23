@@ -9,19 +9,48 @@
     <link href="styles/index.css" rel="stylesheet">
 
     <script>
-        const Teacher = {
-            surname: "Михеева",
-            name: "Татьяна",
-            patronymic: "Александровна",
-            ocupation: "Преподаватель специальных дисциплин",
-            degree: "Высшее",
-            education: "Московский государственный институт электронной техники (технический университет)",
-            qualification: "Инженер-программист инфокоммуникационных систем",
-            specialty: "Программное обеспечение радиоэлектронных систем",
-            discipline: ["Основы алгоритмизации и программирование","Компьютерная графика"],
-            extra: {}
-        };
-        Teacher.extra.category = Teacher.extra.experience = Teacher.extra.email = Teacher.extra.site = "Неизвестный";   
+        const Teacher = [
+            {
+                value: "Михеева",
+                type: "surname"
+            },
+            {
+                value: "Татьяна",
+                type: "name"
+            },
+            {
+                value: "Александровна",
+                type: "patronymic"
+            },
+            {
+                value: "Преподаватель специальных дисциплин",
+                type: "ocupation"
+            },
+            {
+                value: "Высшее",
+                type: "degree"
+            },
+            {
+                value: "Московский государственный институт электронной техники (технический университет)",
+                type: "education"
+            },
+            {
+                value: "Инженер-программист инфокоммуникационных систем",
+                type: "qualification"
+            },
+            {
+                value: "Программное обеспечение радиоэлектронных систем",
+                type: "specialty"
+            },
+            {
+                value: ["Основы алгоритмизации и программирование","Компьютерная графика"],
+                type: "disciplines"
+            },
+            {
+                value: [],
+                type: "extra"
+            }
+        ]
     </script>
 </head>
 
@@ -52,33 +81,88 @@
 
         if (!right) throw new Error("Элемент не найден");
 
-        Teacher.extra["category"] = prompt("Укажите категорию:","Первая");
-        Teacher.extra["experience"] = prompt("Укажите стаж работы:","13");
-        Teacher.extra["email"] = prompt("Укажите email:","program@mail.ru");
-        Teacher.extra["site"] = prompt("Укажите персональный сайт:","program.site/?ref=MpK");
+        const extra = parse("extra");
 
-        console.log(right.childNodes);
+        extra.push({
+            value: prompt("Укажите категорию:","Первая"),
+            type: "category"
+        })
+
+        validateExp();
+        validateEmail();
+
+        
+        extra.push({
+            value: prompt("Укажите персональный сайт:","https://program.site/?ref=MpK"),
+            type: "site"
+        });
+
+        /*
+            Инициализая данных в переменные
+        */
+
+        function parse(type) {
+            return Teacher.find((t) => t.type == type).value;
+        }
+        function parseExtras(type) {
+            const extra = parse('extra');
+            return extra.find((t) => t.type == type).value;
+        }
+
+        function validateExp(experienceCount = 0) {
+            experienceCount = prompt("Укажите стаж:", experienceCount);
+
+            if(experienceCount < 0 || experienceCount > 100 || isNaN(experienceCount)) {
+                
+                alert(`Введите корректное число от 0 до 100`);
+                return validateExp(); }
+
+            extra.push({
+            value: experienceCount,
+            type: "experience"
+        })
+        }
+
+        function validateEmail(email = "") {
+            email = prompt("Укажите email:","program@mail.ru");
+            if(email.match(/\S+@\S+\.\S+/) == null) {
+                alert(`Неверный E-mail`);
+                return validateEmail();
+            }
+
+            extra.push({
+            value: email,
+            type: "email"
+        })
+        }
+
+        /*
+            Вывод данных
+        */
 
         let code = ``;
-        code += returnH(1, `${Teacher.surname} ${Teacher.name} ${Teacher.patronymic}`);
-        code += returnH(2, Teacher.ocupation)
+        code += returnH(1, `${parse("surname")} ${parse('name')} ${parse('patronymic')}`);
+        code += returnH(2, parse("ocupation"))
 
         code += returnP(`Основная информация:`);
 
+        
+
         code += `<ul type="square">`;
-            code += returnLi(`Уровень образования`, Teacher.degree);
-            code += returnLi(`Образование`, Teacher.education);
-            code += returnLi(`Квалификация`, Teacher.qualification);
-            code += returnLi(`Специализация`, Teacher.specialty);
+            code += returnLi(`Уровень образования`, parse('degree'));
+            code += returnLi(`Образование`, parse('education'));
+            code += returnLi(`Квалификация`, parse('qualification'));
+            code += returnLi(`Специализация`, parse('specialty'));
             code += returnLi(`Преподаваемые дисциплины`, "");
                 code += `<ul>`;
 
-                    if(Teacher.discipline.length < 1) {
+                    const disciplines = parse('disciplines')
+                    console.log(disciplines);
+
+                    if(disciplines.length < 1) {
                         code += returnLi2(`Нет таковых`);
                     } else {
-                        console.log(Teacher.discipline)
-                        Teacher.discipline.forEach((discipline) => {
-                            console.log(discipline)
+                        disciplines.forEach((discipline) => {
                             code += returnLi2(discipline);
                         })
                     }
@@ -88,10 +172,10 @@
         code += returnP(`Дополнительная информация:`);
 
         code += `<ul type="square">`;
-            code += returnLi(`Категория`, Teacher.extra["category"]);
-            code += returnLi(`Стаж`, Teacher.extra["experience"]);
-            code += returnLi(`E-mail`, Teacher.extra["email"]);
-            code += returnLi(`Персональный сайт`, `<a href="${Teacher.extra["site"]}">${Teacher.extra["site"]}</a>`);
+            code += returnLi(`Категория`, parseExtras("category"));
+            code += returnLi(`Стаж`, parseExtras("experience"));
+            code += returnLi(`E-mail`, parseExtras("email"));
+            code += returnLi(`Персональный сайт`, `<a href="${parseExtras("site")}">${parseExtras("site")}</a>`);
         code += `</ul>`;
         
         right.innerHTML += code;    
@@ -101,7 +185,7 @@
         }
 
         function returnP(name) {
-            return `<p>${name}</p>`;
+            return `<p>${name   }</p>`;
         }
 
         function returnLi(name, value) {
